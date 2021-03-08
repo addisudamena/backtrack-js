@@ -1,0 +1,179 @@
+<script src="https://code.jquery.com/jquery-latest.min.js" type="text/javascript"></script>
+<script>
+
+var w=8;
+var b=[];
+var counter=0;
+
+
+
+function draw(){
+	$("#board").text("");
+	b.reverse().forEach(draw_all);
+	b.reverse();
+	console.log("go "+counter);
+}
+
+
+function draw_all(a){
+	
+	$("#board").append("<br>-");
+	a.forEach(draw_line);
+}
+
+
+
+function draw_line(a){
+	$("#board").append("| "+a+" |");
+}
+
+
+
+
+
+
+function go(y){
+	x=counter;
+	r=[]
+	for(i=0;i<x;i++){
+		if(b[i][y]==1) return [i,y]
+		for(j=0;j<8;j++){
+			if(b[i][y-x+i]==1||b[i][y+x-i]==1)return [i,j]
+			
+			//console.log((y-x+i)+", "+j+", "+(y+x-i)+" checked");	
+		}
+	}
+       counter++; 
+       mark(x,y);
+
+    return false
+}
+
+function back(){
+	counter--;
+	for(j=0;j<8;j++){
+		b[counter][j]=0;
+	}
+	
+	draw();
+
+}
+
+
+
+function mark(x,y){
+	b[x][y]=1;
+	draw();
+}
+
+
+for(i=0;i<w;i++){
+	a=[]
+	for(j=0;j<w;j++)
+	    a[j]=0;
+	b[i]=a;	 
+}
+ 
+function clear(){
+for(i=0;i<8;i++)
+for(j=0;j<8;j++)
+	b[i][j]=0;
+counter=0;
+
+
+
+}
+
+
+
+$(document).ready(function(){
+
+
+        draw();
+
+ycounter=0;
+precounter=[0,0,0,0,0,0,0,0];
+
+function playNext(){
+	if(ycounter>7){
+	back();
+	ycounter=precounter[counter]+1;
+	return;
+	}
+
+	ret=go(ycounter);
+	if(ret){
+	   
+           ycounter++;
+      }
+
+	else{
+	   precounter[counter-1]=ycounter;
+	   ycounter=0;
+	//console.log("conter is "+counter);
+	//  console.log("pyc became ="+precounter);
+
+	}
+	if(counter>7){
+		clearInterval(p);
+		//alert('Done')
+;}
+//console.log("yc became ="+ycounter);
+
+
+}
+
+
+var p;
+
+$("#set").click(function(){
+
+		clear();
+                counter=1;
+		b[0][$("#in").val()]=1;
+		;
+
+});
+
+
+$("#next").click(function(){
+
+		
+		playNext();
+
+});
+
+
+
+$("#in").keypress(function(e){
+	if(e.keyCode==13){
+		clear();
+                counter=1;
+		b[0][this.value]=1;
+		p=setInterval(playNext,10);
+
+		$("#in").val("");
+	
+	}
+});
+
+
+
+
+});
+
+
+
+</script>
+<body style="
+    font-size: 34px;
+    color: #151a14;
+    font-family: monospace;
+    font-weight: 900;
+    background: #b4b4ad;
+">
+<div id="board">
+</div>
+<input id="in"/>
+<button id="set">Set</button>
+<button id="next">Next</button>
